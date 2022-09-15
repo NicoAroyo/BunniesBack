@@ -5,6 +5,7 @@ export const testRouter = express.Router();
 
 //Post Method
 testRouter.post("/", async (req, res) => {
+  console.log(req.body);
   const data = new Model({
     name: req.body.name,
     age: req.body.age,

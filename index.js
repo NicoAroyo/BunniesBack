@@ -2,7 +2,9 @@ import env from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+// import bodyParser from "body-parser";
 import { testRouter } from "./src/routes/testRouter.js";
+import { authRouter } from "./src/routes/auth/authRouter.js";
 
 env.config();
 const mongoString = process.env.DB_URL;
@@ -19,9 +21,11 @@ db.once("connected", () => {
 });
 
 const app = express();
-const PORT = 6000;
+const PORT = 3003;
 
 app.use(express.json());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
   console.log(`Server Started at http://localhost:${PORT}/`);
@@ -30,3 +34,5 @@ app.listen(PORT, () => {
 app.use(cors());
 
 app.use("/api/test", testRouter);
+
+app.use("/api/auth", authRouter);
