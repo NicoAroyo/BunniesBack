@@ -1,6 +1,4 @@
-//VALIDATION
 import Joi from "@hapi/joi";
-import { Schema } from "mongoose";
 
 export const signUpValidation = (data) => {
   const schema = new Joi.object().keys({
@@ -8,6 +6,7 @@ export const signUpValidation = (data) => {
     password: Joi.string().min(6).required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
+    imageUrl: Joi.string(),
   });
 
   return Joi.attempt(data, schema);

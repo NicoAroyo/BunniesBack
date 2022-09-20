@@ -47,37 +47,29 @@ authRouter.post("/sign-up", async (req, res) => {
 });
 
 authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
+  //VALIDATE CREDENTIALS
   try {
-    const user = await User.findOne({
-      email,
-      password,
-    }).exec();
-    if (user) {
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-      res.status(200).json({ ok: true, user, accessToken });
-    } else {
-      throw new Error("Invalid Credentials");
+    const { email, password } = req.body;
+    const { error } = loginUpValidation(req.body);
+    if (error) {
+      throw new Error(error.message);
     }
+    //VALIDATE EMAIL
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      throw new Error("Wrong Email");
+    }
+    //VALIDATE PASSWORD
+    const validPass = await bcrypt.compare(password, user.password);
+    if (!validPass) {
+      throw new Error("Wrong Password");
+    }
+    //CREATE ACCESS TOKEN
+    const token = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET);
+    res.header("auth-token", token);
+
+    res.status(200).json({ ok: true, user, accessToken: token });
   } catch (error) {
     res.status(400).json({ message: error.message, ok: false });
   }
 });
-
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader?.split(" ")[1];
-  if (!token) {
-    return res.status(401);
-  }
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403);
-    }
-
-    req.user = user;
-    next();
-  });
-};
