@@ -12,10 +12,14 @@ const userSchema = new mongoose.Schema({
   password: {
     required: true,
     type: String,
+    min: 6,
+    max: 1024,
   },
   email: {
     required: true,
     type: String,
+    min: 6,
+    max: 1024,
   },
   isAdmin: {
     required: true,
@@ -25,6 +29,10 @@ const userSchema = new mongoose.Schema({
   imageUrl: {
     required: false,
     type: String,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
   },
 });
 
