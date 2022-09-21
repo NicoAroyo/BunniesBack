@@ -1,14 +1,17 @@
 import express from "express";
-import Model from "../models/testModel.js";
+import Post from "../models/post.js";
 
-export const testRouter = express.Router();
+export const postsRouter = express.Router();
 
 //Post Method
-testRouter.post("/", async (req, res) => {
+postsRouter.post("/", async (req, res) => {
   console.log(req.body);
-  const data = new Model({
-    name: req.body.name,
-    age: req.body.age,
+  const data = new Post({
+    content: req.body.content,
+    userId: req.body.userId,
+    imageUrl: req.body.imageUrl,
+    privacy: req.body.privacy,
+    location: req.body.location,
   });
 
   try {
@@ -20,9 +23,9 @@ testRouter.post("/", async (req, res) => {
 });
 
 //Get all Method
-testRouter.get("/getAll", async (req, res) => {
+postsRouter.get("/", async (req, res) => {
   try {
-    const data = await Model.find();
+    const data = await Post.find();
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -30,9 +33,9 @@ testRouter.get("/getAll", async (req, res) => {
 });
 
 //Get by ID Method
-testRouter.get("/:id", async (req, res) => {
+postsRouter.get("/:id", async (req, res) => {
   try {
-    const data = await Model.findById(req.params.id);
+    const data = await Post.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -40,12 +43,12 @@ testRouter.get("/:id", async (req, res) => {
 });
 
 //Update by ID Method
-testRouter.patch("/:id", async (req, res) => {
+postsRouter.patch("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
-    const result = await Model.findByIdAndUpdate(id, updatedData, options);
+    const result = await Post.findByIdAndUpdate(id, updatedData, options);
     res.send(result);
   } catch (error) {
     res.send(400).json({ message: error.message });
@@ -53,10 +56,10 @@ testRouter.patch("/:id", async (req, res) => {
 });
 
 //Delete by ID Method
-testRouter.delete("/:id", async (req, res) => {
+postsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Model.findByIdAndDelete(id);
+    const data = await Post.findByIdAndDelete(id);
     res.send(`${data} deleted`);
   } catch (error) {
     res.send(400).json({ message: error.message });
