@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
-  content : {
-    required : true,
-    type : String
+  content: {
+    required: true,
+    type: String,
   },
   userId: {
-    required : true,
-    type : String
+    required: true,
+    type: String,
   },
   imageUrl: {
     required: false,
@@ -17,18 +17,22 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  comments : {
-    required : false,
-    type: Array
+  comments: {
+    required: false,
+    type: Array,
   },
   privacy: {
-    type : String,
-    default : "public"
+    type: String,
+    default: "public",
   },
-  likes : {
-    required : false, 
-    type : Array
-  }
+  likes: {
+    required: false,
+    type: Array,
+  },
+  location: {
+    required: false,
+    type: Object,
+  },
 });
 
 export default mongoose.model("Post", postSchema);
