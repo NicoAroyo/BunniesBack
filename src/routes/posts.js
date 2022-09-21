@@ -7,10 +7,11 @@ export const postsRouter = express.Router();
 postsRouter.post("/", async (req, res) => {
   console.log(req.body);
   const data = new Model({
-    name: req.body.name,
-    age: req.body.age,
+    content: req.body.content,
+    userId : req.body.userId,
+    imageUrl : req.body.imageUrl,
+    privacy : req.body.privacy,
   });
-
   try {
     const dataToSave = await data.save();
     res.status(200).json(dataToSave);
@@ -20,7 +21,7 @@ postsRouter.post("/", async (req, res) => {
 });
 
 //Get all Method
-postsRouter.get("/getAll", async (req, res) => {
+postsRouter.get("/", async (req, res) => {
   try {
     const data = await Model.find();
     res.json(data);
@@ -29,8 +30,19 @@ postsRouter.get("/getAll", async (req, res) => {
   }
 });
 
+postsRouter.get("/getUserPosts/:userId", async (req, res) => {
+  try {
+    const data = await Model.find(
+      {userId : req.params.userId} && {isComment : false}
+    );
+    res.json(data);
+  } catch (error) {
+    res.send(500).json({ message: error.message });
+  }
+});
+
 //Get by ID Method
-testRouter.get("/:id", async (req, res) => {
+postsRouter.get("/:id", async (req, res) => {
   try {
     const data = await Model.findById(req.params.id);
     res.json(data);
@@ -40,7 +52,7 @@ testRouter.get("/:id", async (req, res) => {
 });
 
 //Update by ID Method
-testRouter.patch("/:id", async (req, res) => {
+postsRouter.patch("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
@@ -53,7 +65,7 @@ testRouter.patch("/:id", async (req, res) => {
 });
 
 //Delete by ID Method
-testRouter.delete("/:id", async (req, res) => {
+postsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Model.findByIdAndDelete(id);
