@@ -28,6 +28,10 @@ const postSchema = new mongoose.Schema({
   likes : {
     required : false, 
     type : Array
+  },
+  isComment : {
+    type: Boolean,
+    default : false
   }
 });
 
