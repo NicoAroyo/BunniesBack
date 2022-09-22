@@ -33,6 +33,14 @@ const postSchema = new mongoose.Schema({
     required: false,
     type: Object,
   },
+  likes : {
+    required : false, 
+    type : Array
+  },
+  isComment : {
+    type: Boolean,
+    default : false
+  }
 });
 
 export default mongoose.model("Post", postSchema);
