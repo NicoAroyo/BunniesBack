@@ -1,6 +1,7 @@
 import express from "express";
 import Model from "../models/relationship.js";
 
+
 export const relationshipsRouter = express.Router();
 
 //Post Method
@@ -51,6 +52,16 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
 
 
   relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
+    try {
+      const data = await Model.find({userId1 : req.params.userId} 
+       , {type : "blocked"});
+      res.json(data);
+    } catch (error) {
+      res.send(500).json({ message: error.message });
+    }
+  });
+
+  relationshipsRouter.get("/getBlocks/:userId", async (req, res) => {
     try {
       const data = await Model.findOne(({userId1 : req.params.userId} 
       || {userId2 : req.params.userId}) && {type : "blocked"});
