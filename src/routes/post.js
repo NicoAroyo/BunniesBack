@@ -42,6 +42,15 @@ postsRouter.get("/:id", async (req, res) => {
   }
 });
 
+postsRouter.get("/getPostsByUser/:userId", async (req, res) => {
+  try {
+    const data = await Post.find({userId : req.params.userId});
+    res.json(data);
+  } catch (error) {
+    res.send(500).json({ message: error.message });
+  }
+});
+
 //Update by ID Method
 postsRouter.patch("/:id", async (req, res) => {
   try {
