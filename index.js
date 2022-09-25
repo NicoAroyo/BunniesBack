@@ -6,6 +6,7 @@ import cors from "cors";
 //routes
 import { authRouter } from "./src/routes/auth/auth.js";
 import { postsRouter } from "./src/routes/post.js";
+import { usersRouter } from "./src/routes/users.js";
 
 env.config();
 
@@ -32,3 +33,5 @@ app.listen(PORT, () => {
 app.use("/api/auth", authRouter);
 
 app.use("/api/posts", postsRouter);
+
+app.use("/api/users", usersRouter);

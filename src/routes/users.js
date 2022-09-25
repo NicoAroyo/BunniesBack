@@ -1,22 +1,22 @@
 import express, { json } from "express";
-import Model from "../models/user.js";
+import User from "../models/user.js";
 
-const usersRouter = express.Router();
+export const usersRouter = express.Router();
 
 //GET ALL http://localhost:5000/api/questions/
 usersRouter.get("/", async (req, res) => {
   try {
-    const data = await Model.find();
-    res.json(data);
+    const data = await User.find();
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
 //GET ONE http://localhost:5000/api/questions/{id}
 usersRouter.get("/:id", async (req, res) => {
   try {
-    const data = await Model.findById(req.params.id);
+    const data = await User.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -29,7 +29,7 @@ usersRouter.patch("/:id", async (req, res) => {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
-    const result = await Model.findByIdAndUpdate(id, updatedData, options);
+    const result = await User.findByIdAndUpdate(id, updatedData, options);
     res.send(result);
   } catch (error) {
     res.send(400).json({ message: error.message });
@@ -38,7 +38,7 @@ usersRouter.patch("/:id", async (req, res) => {
 
 //POST http://localhost:5000/api/questions/
 usersRouter.post("/", async (req, res) => {
-  const data = new Model({
+  const data = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     loginType: req.body.loginType,
@@ -60,20 +60,9 @@ usersRouter.post("/", async (req, res) => {
 usersRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Model.findByIdAndDelete(id);
+    const data = await User.findByIdAndDelete(id);
     res.send(`${data} deleted`);
   } catch (error) {
     res.send(400).json({ message: error.message });
   }
 });
-
-// usersRouter.get("/bymail/:email", async (req, res) => {
-//   try {
-//     const email = req.params.email;
-//     const data = await Model.find({ email: req.params.email });
-//     res.json(data);
-//   } catch (error) {
-//     res.send(500).json({ message: error.message });
-//   }
-// });
-// export default usersRouter;
