@@ -41,8 +41,8 @@ relationshipsRouter.get("/:id", async (req, res) => {
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
-      const data = await Model.findOne(({userId1 : req.params.userId} 
-      || {userId2 : req.params.userId}) && {type : "friends"});
+      const data = await Model.find({userId1 : req.params.userId} 
+     , {type : "friends"});
       res.json(data);
     } catch (error) {
       res.send(500).json({ message: error.message });
