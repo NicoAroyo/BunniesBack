@@ -6,7 +6,7 @@ export const relationshipsRouter = express.Router();
 
 //Post Method
 relationshipsRouter.post("/", async (req, res) => {
-  console.log(req.body);
+  console.log("hi"  + req.body);
   const data = new Model({
     userId1: req.body.userId1,
     userId2: req.body.userId2,
@@ -42,8 +42,9 @@ relationshipsRouter.get("/:id", async (req, res) => {
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
+        console.log('hi');
       const data = await Model.find({userId1 : req.params.userId} 
-     , {type : "friends"});
+     && {type : "friends"});
       res.json(data);
     } catch (error) {
       res.send(500).json({ message: error.message });

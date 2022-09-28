@@ -7,6 +7,7 @@ import cors from "cors";
 import { authRouter } from "./src/routes/auth/auth.js";
 import { postsRouter } from "./src/routes/post.js";
 import { usersRouter } from "./src/routes/users.js";
+import { relationshipsRouter } from "./src/routes/relationships.js";
 
 env.config();
 
@@ -35,3 +36,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
 
 app.use("/api/users", usersRouter);
+
+app.use("/api/relationships" , relationshipsRouter);
