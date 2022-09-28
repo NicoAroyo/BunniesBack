@@ -1,12 +1,12 @@
 import express from "express";
-import Model from "../models/relationship.js";
+import Relationship from "../models/relationship.js";
 
 export const relationshipsRouter = express.Router();
 
 //Post Method
 relationshipsRouter.post("/", async (req, res) => {
-  console.log(req.body);
-  const data = new Model({
+  console.log("hi" + req.body);
+  const data = new Relationship({
     userId1: req.body.userId1,
     userId2: req.body.userId2,
     type: req.body.type,
@@ -22,7 +22,7 @@ relationshipsRouter.post("/", async (req, res) => {
 //Get all Method
 relationshipsRouter.get("/", async (req, res) => {
   try {
-    const data = await Model.find();
+    const data = await Relationship.find();
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -32,7 +32,7 @@ relationshipsRouter.get("/", async (req, res) => {
 //Get by ID Method
 relationshipsRouter.get("/:id", async (req, res) => {
   try {
-    const data = await Model.findById(req.params.id);
+    const data = await Relationship.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -41,7 +41,7 @@ relationshipsRouter.get("/:id", async (req, res) => {
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
   try {
-    const data = await Model.find(
+    const data = await Relationship.find(
       { userId1: req.params.userId },
       { type: "friends" }
     );
@@ -53,7 +53,7 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
 
 relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
   try {
-    const data = await Model.find(
+    const data = await Relationship.find(
       { userId1: req.params.userId },
       { type: "blocked" }
     );
@@ -65,7 +65,7 @@ relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
 
 relationshipsRouter.get("/getBlocks/:userId", async (req, res) => {
   try {
-    const data = await Model.findOne(
+    const data = await Relationship.findOne(
       ({ userId1: req.params.userId } || { userId2: req.params.userId }) && {
         type: "blocked",
       }
@@ -104,7 +104,7 @@ relationshipsRouter.get("/getBlocks/:userId", async (req, res) => {
 relationshipsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Model.findByIdAndDelete(id);
+    const data = await Relationship.findByIdAndDelete(id);
     res.send(`${data} deleted`);
   } catch (error) {
     res.send(400).json({ message: error.message });

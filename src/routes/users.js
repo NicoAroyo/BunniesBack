@@ -7,7 +7,7 @@ export const usersRouter = express.Router();
 usersRouter.get("/", async (req, res) => {
   try {
     const data = await User.find();
-    res.status(200).json(data);
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -19,7 +19,7 @@ usersRouter.get("/:id", async (req, res) => {
     const data = await User.findById(req.params.id);
     res.json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -30,9 +30,9 @@ usersRouter.patch("/:id", async (req, res) => {
     const updatedData = req.body;
     const options = { new: true };
     const result = await User.findByIdAndUpdate(id, updatedData, options);
-    res.send(result);
+    res.status(200).send(result);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
