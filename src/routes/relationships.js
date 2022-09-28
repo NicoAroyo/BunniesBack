@@ -40,6 +40,7 @@ relationshipsRouter.get("/:id", async (req, res) => {
 });
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
+<<<<<<< HEAD
   try {
     const data = await Relationship.find(
       { userId1: req.params.userId },
@@ -50,6 +51,16 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+=======
+    try {
+      const data = await Model.find({userId1 : req.params.userId
+        , type : "friends"});
+      res.json(data);
+    } catch (error) {
+      res.send(500).json({ message: error.message });
+    }
+  });
+>>>>>>> 181696c8e5683f6d046ca9472b39eb3243e6ee75
 
 relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
   try {
