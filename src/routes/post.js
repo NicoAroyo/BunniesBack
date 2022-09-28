@@ -44,10 +44,10 @@ postsRouter.get("/:id", async (req, res) => {
 
 postsRouter.get("/getPostsByUser/:userId", async (req, res) => {
   try {
-    const data = await Post.find({userId : req.params.userId});
-    res.json(data);
+    const data = await Post.find({ userId: req.params.userId });
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
