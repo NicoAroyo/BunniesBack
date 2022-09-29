@@ -42,9 +42,11 @@ relationshipsRouter.get("/:id", async (req, res) => {
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
-      const data = await Model.find({userId1 : req.params.userId
+    const data = await Model.find({userId1 : req.params.userId
+    , type : "friends"});
+    const data2 = await Model.find({userId2 : req.params.userId
         , type : "friends"});
-      res.json(data);
+      res.json([...data, ...data2]);
     } catch (error) {
       res.send(500).json({ message: error.message });
     }
