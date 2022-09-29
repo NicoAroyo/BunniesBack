@@ -30,9 +30,29 @@ const userSchema = new mongoose.Schema({
     required: false,
     type: String,
   },
+  workplace: {
+    required: false,
+    type: String,
+  },
+  bio: {
+    required: false,
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now,
+  },
+  birthDate: {
+    type: Date,
+    required: false,
+  },
+  gender: {
+    type: String,
+    required: false,
+  },
+  education: {
+    type: String,
+    required: false,
   },
 });
 

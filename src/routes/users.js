@@ -30,9 +30,9 @@ usersRouter.patch("/:id", async (req, res) => {
     const updatedData = req.body;
     const options = { new: true };
     const result = await User.findByIdAndUpdate(id, updatedData, options);
-    res.send(result);
+    res.status(200).send(result);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
