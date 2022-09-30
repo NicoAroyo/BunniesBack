@@ -1,15 +1,16 @@
 import express from "express";
-import Relationship from "../models/relationship.js";
+import Model from "../models/relationship.js";
+
 
 export const relationshipsRouter = express.Router();
 
 //Post Method
 relationshipsRouter.post("/", async (req, res) => {
-  console.log("hi" + req.body);
-  const data = new Relationship({
+  console.log("hi"  + req.body);
+  const data = new Model({
     userId1: req.body.userId1,
     userId2: req.body.userId2,
-    type: req.body.type,
+    type : req.body.type
   });
   try {
     const dataToSave = await data.save();
@@ -22,7 +23,7 @@ relationshipsRouter.post("/", async (req, res) => {
 //Get all Method
 relationshipsRouter.get("/", async (req, res) => {
   try {
-    const data = await Relationship.find();
+    const data = await Model.find();
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -32,7 +33,7 @@ relationshipsRouter.get("/", async (req, res) => {
 //Get by ID Method
 relationshipsRouter.get("/:id", async (req, res) => {
   try {
-    const data = await Relationship.findById(req.params.id);
+    const data = await Model.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.send(500).json({ message: error.message });
@@ -40,18 +41,6 @@ relationshipsRouter.get("/:id", async (req, res) => {
 });
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
-<<<<<<< HEAD
-  try {
-    const data = await Relationship.find(
-      { userId1: req.params.userId },
-      { type: "friends" }
-    );
-    res.status(200).json(data || []);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-=======
     try {
     const data = await Model.find({userId1 : req.params.userId
     , type : "friends"});
@@ -62,62 +51,59 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
       res.send(500).json({ message: error.message });
     }
   });
->>>>>>> 181696c8e5683f6d046ca9472b39eb3243e6ee75
 
-relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
+
+  relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
+    try {
+      const data = await Model.find({userId1 : req.params.userId
+       , type : "blocked"});
+       const data2 = await Model.find({userId2 : req.params.userId , type : "blocked"});
+      res.json(...data , ...data2);
+    } catch (error) {
+      res.send(500).json({ message: error.message });
+    }
+  });
+
+  relationshipsRouter.get("/getBlockedByYou/:userId", async (req, res) => {
+    try {
+      const data = await Model.find({userId1 : req.params.userId
+       , type : "blocked"});
+      res.json(data);
+    } catch (error) {
+      res.send(500).json({ message: error.message });
+    }
+  });
+
+
+  relationshipsRouter.get("/getRequested/:userId", async (req, res) => {
+    try {
+      const data = await Model.find({userId2 : req.params.userId
+       , type : "request"});
+    console.log(data);
+      res.json(data);
+    } catch (error) {
+      res.send(500).json({ message: error.message });
+    }
+  });
+
+
+relationshipsRouter.patch("/:id", async (req, res) => {
   try {
-    const data = await Relationship.find(
-      { userId1: req.params.userId },
-      { type: "blocked" }
-    );
-    res.json(data);
+    const id = req.params.id;
+    const updatedData = req.body;
+    const options = { new: true };
+    const result = await Model.findByIdAndUpdate(id, updatedData, options);
+    res.send(result);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.send(400).json({ message: error.message });
   }
 });
-
-relationshipsRouter.get("/getBlocks/:userId", async (req, res) => {
-  try {
-    const data = await Relationship.findOne(
-      ({ userId1: req.params.userId } || { userId2: req.params.userId }) && {
-        type: "blocked",
-      }
-    );
-    res.json(data);
-  } catch (error) {
-    res.send(500).json({ message: error.message });
-  }
-});
-
-//OPTIONAL FEATURE
-//   relationshipsRouter.get("/getRequested/:userId", async (req, res) => {
-//     try {
-//       const data = await Model.findOne(({userId1 : req.params.userId}
-//       || {userId2 : req.params.userId}) && {type : "blocked"});
-//       res.json(data);
-//     } catch (error) {
-//       res.send(500).json({ message: error.message });
-//     }
-//   });
-
-//OPTIONAL FOR REQUESTS
-// relationshipsRouter.patch("/:id", async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const updatedData = req.body;
-//     const options = { new: true };
-//     const result = await Model.findByIdAndUpdate(id, updatedData, options);
-//     res.send(result);
-//   } catch (error) {
-//     res.send(400).json({ message: error.message });
-//   }
-// });
 
 //Delete by ID Method
 relationshipsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Relationship.findByIdAndDelete(id);
+    const data = await Model.findByIdAndDelete(id);
     res.send(`${data} deleted`);
   } catch (error) {
     res.send(400).json({ message: error.message });
