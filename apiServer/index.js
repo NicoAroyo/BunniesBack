@@ -15,7 +15,7 @@ env.config();
 //CONNECT TO DB
 const mongoString = process.env.DB_URL;
 
-mongoose.connect(mongoString, () => console.log("Connected to MongoDB"));
+mongoose.connect(mongoString, () => console.log("API Connected to MongoDB"));
 const db = mongoose.connection;
 db.on("error", (error) => {
   console.log(error);
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(cors());
 
 app.listen(PORT, () => {
-  console.log(`Server Started at http://localhost:${PORT}/`);
+  console.log(`API Server Started at http://localhost:${PORT}/`);
 });
 
 app.use("/api/auth", authRouter);

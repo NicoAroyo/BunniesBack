@@ -10,6 +10,7 @@ postsRouter.post("/", async (req, res) => {
     content: req.body.content,
     userId: req.body.userId,
     imageUrl: req.body.imageUrl,
+    fileName: req.body.fileName,
     privacy: req.body.privacy,
     location: req.body.location,
   });
@@ -71,6 +72,6 @@ postsRouter.delete("/:id", async (req, res) => {
     const data = await Post.findByIdAndDelete(id);
     res.send(`${data} deleted`);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });

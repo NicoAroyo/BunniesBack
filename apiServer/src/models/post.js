@@ -13,6 +13,10 @@ const postSchema = new mongoose.Schema({
     required: false,
     type: String,
   },
+  fileName: {
+    required: false,
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now,
@@ -33,14 +37,14 @@ const postSchema = new mongoose.Schema({
     required: false,
     type: Object,
   },
-  likes : {
-    required : false, 
-    type : Array
+  likes: {
+    required: false,
+    type: Array,
   },
-  isComment : {
+  isComment: {
     type: Boolean,
-    default : false
-  }
+    default: false,
+  },
 });
 
 export default mongoose.model("Post", postSchema);
