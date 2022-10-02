@@ -24,9 +24,9 @@ relationshipsRouter.post("/", async (req, res) => {
 relationshipsRouter.get("/", async (req, res) => {
   try {
     const data = await Model.find();
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -34,9 +34,9 @@ relationshipsRouter.get("/", async (req, res) => {
 relationshipsRouter.get("/:id", async (req, res) => {
   try {
     const data = await Model.findById(req.params.id);
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -61,9 +61,9 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
       return friend;
     });
     const all = await Promise.all([...friends, ...friends2]);
-    res.json(all);
+    res.status(200).json(all);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

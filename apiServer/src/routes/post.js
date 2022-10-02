@@ -1,11 +1,11 @@
 import express from "express";
+import { verifyAccessToken } from "../../../authServer/JWT/jwtHelper.js";
 import Post from "../models/post.js";
 
 export const postsRouter = express.Router();
 
 //Post Method
-postsRouter.post("/", async (req, res) => {
-  console.log(req.body);
+postsRouter.post("/", verifyAccessToken, async (req, res) => {
   const data = new Post({
     content: req.body.content,
     userId: req.body.userId,
@@ -13,6 +13,7 @@ postsRouter.post("/", async (req, res) => {
     fileName: req.body.fileName,
     privacy: req.body.privacy,
     location: req.body.location,
+    tagged: req.body.tagged,
   });
 
   try {
@@ -27,9 +28,9 @@ postsRouter.post("/", async (req, res) => {
 postsRouter.get("/", async (req, res) => {
   try {
     const data = await Post.find();
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -37,9 +38,9 @@ postsRouter.get("/", async (req, res) => {
 postsRouter.get("/:id", async (req, res) => {
   try {
     const data = await Post.findById(req.params.id);
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -57,11 +58,12 @@ postsRouter.patch("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
+    console.log(updatedData);
     const options = { new: true };
     const result = await Post.findByIdAndUpdate(id, updatedData, options);
-    res.send(result);
+    res.status(201).send(result);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -70,7 +72,7 @@ postsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Post.findByIdAndDelete(id);
-    res.send(`${data} deleted`);
+    res.status(204).send(`${data} deleted`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

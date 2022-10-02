@@ -8,9 +8,9 @@ groupsRouter.post("/", async (req, res) => {
   console.log(req.body);
   const data = new Model({
     content: req.body.content,
-    userId : req.body.userId,
-    imageUrl : req.body.imageUrl,
-    privacy : req.body.privacy,
+    userId: req.body.userId,
+    imageUrl: req.body.imageUrl,
+    privacy: req.body.privacy,
   });
   try {
     const dataToSave = await data.save();
@@ -24,9 +24,9 @@ groupsRouter.post("/", async (req, res) => {
 groupsRouter.get("/", async (req, res) => {
   try {
     const data = await Model.find();
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -34,9 +34,9 @@ groupsRouter.get("/", async (req, res) => {
 groupsRouter.get("/:id", async (req, res) => {
   try {
     const data = await Model.findById(req.params.id);
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -47,9 +47,9 @@ groupsRouter.patch("/:id", async (req, res) => {
     const updatedData = req.body;
     const options = { new: true };
     const result = await Model.findByIdAndUpdate(id, updatedData, options);
-    res.send(result);
+    res.status.json(result);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -58,8 +58,8 @@ groupsRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Model.findByIdAndDelete(id);
-    res.send(`${data} deleted`);
+    res.status(204).send(`${data} deleted`);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });

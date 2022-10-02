@@ -45,6 +45,9 @@ const postSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  tagged: {
+    type: Array,
+  },
 });
 
 export default mongoose.model("Post", postSchema);
