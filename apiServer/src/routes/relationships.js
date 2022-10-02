@@ -48,14 +48,21 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     const data2 = await Model.find({userId2 : req.params.userId
         , type : "friends"});
     const friends = data.map(
-          (r) =>   User.findById(r.userId2)
-        ); 
+          async (r) =>  {
+           const user = await User.findById(r.userId2)
+           const friend = {id : r._id , friend : user};
+           return friend;
+          }
+        );     
     const friends2 =  data2.map(
-             (r) =>  User.findById(r.userId1)
+            async (r) =>  
+             {
+              const user =await  User.findById(r.userId1)
+              const friend = {id : r._id , friend : user};
+              return friend;
+             }
         );
-       console.log(friends);
       const all = await Promise.all([...friends, ...friends2]);
-      console.log(all);
       res.json(all);
     } catch (error) {
       res.send(500).json({ message: error.message });
@@ -67,8 +74,24 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
       const data = await Model.find({userId1 : req.params.userId
        , type : "blocked"});
-       const data2 = await Model.find({userId2 : req.params.userId , type : "blocked"});
-      res.json(...data , ...data2);
+      const data2 = await Model.find({userId2 : req.params.userId , type : "blocked"});
+      const blocked = data.map(
+        async (r) =>  {
+         const user = await User.findById(r.userId2)
+         const block = {id : r._id , blocked : user};
+         return block;
+        }
+      );     
+  const blocked2 =  data2.map(
+          async (r) =>  
+           {
+            const user =await  User.findById(r.userId1)
+            const block = {id : r._id , blocked : user};
+            return block;
+           }
+      );
+    const all = await Promise.all([...blocked, ...blocked2]);
+      res.json(all);
     } catch (error) {
       res.send(500).json({ message: error.message });
     }
@@ -78,7 +101,15 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
       const data = await Model.find({userId1 : req.params.userId
        , type : "blocked"});
-      res.json(data);
+       const blocked = data.map(
+        async (r) =>  {
+         const user = await User.findById(r.userId2)
+         const block = {id : r._id , blocked : user};
+         return block;
+        }
+      );  
+      const all = await Promise.all([...blocked]);
+      res.json(all);
     } catch (error) {
       res.send(500).json({ message: error.message });
     }
@@ -89,8 +120,15 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     try {
       const data = await Model.find({userId2 : req.params.userId
        , type : "request"});
-    console.log(data);
-      res.json(data);
+       const requested = data.map(
+        async (r) =>  {
+         const user = await User.findById(r.userId2)
+         const request = {id : r._id , blocked : user};
+         return request;
+        }
+      );  
+      const all = await Promise.all([...requested]);
+      res.json(all);
     } catch (error) {
       res.send(500).json({ message: error.message });
     }
