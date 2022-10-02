@@ -1,5 +1,6 @@
 import express from "express";
 import Model from "../models/relationship.js";
+import User from "../models/user.js";
 
 
 export const relationshipsRouter = express.Router();
@@ -46,7 +47,16 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     , type : "friends"});
     const data2 = await Model.find({userId2 : req.params.userId
         , type : "friends"});
-      res.json([...data, ...data2]);
+    const friends = data.map(
+          (r) =>   User.findById(r.userId2)
+        ); 
+    const friends2 =  data2.map(
+             (r) =>  User.findById(r.userId1)
+        );
+       console.log(friends);
+      const all = await Promise.all([...friends, ...friends2]);
+      console.log(all);
+      res.json(all);
     } catch (error) {
       res.send(500).json({ message: error.message });
     }
