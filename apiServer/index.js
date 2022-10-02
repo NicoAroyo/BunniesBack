@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 //routes
-import { authRouter } from "./src/routes/auth/auth.js";
 import { postsRouter } from "./src/routes/post.js";
 import { usersRouter } from "./src/routes/users.js";
 import { relationshipsRouter } from "./src/routes/relationships.js";
@@ -31,8 +30,6 @@ app.use(cors());
 app.listen(PORT, () => {
   console.log(`API Server Started at http://localhost:${PORT}/`);
 });
-
-app.use("/api/auth", authRouter);
 
 app.use("/api/posts", postsRouter);
 

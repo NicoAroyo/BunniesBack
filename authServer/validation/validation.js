@@ -12,7 +12,7 @@ export const signUpValidation = (data) => {
   return Joi.attempt(data, schema);
 };
 
-export const loginUpValidation = (data) => {
+export const loginValidation = (data) => {
   const schema = new Joi.object().keys({
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
