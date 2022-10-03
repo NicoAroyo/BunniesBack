@@ -1,5 +1,4 @@
 import express from "express";
-import { useParams } from "react-router-dom";
 import Model from "../models/relationship.js";
 import User from "../models/user.js";
 
@@ -11,19 +10,22 @@ relationshipsRouter.patch(
   async (req, res) => {
     try {
       const { receiverId } = req.params;
-      const { sender } = req.body;
+      const senderId = req.body._id;
+      const sender = await User.findById(senderId);
       const receiver = await User.findById(receiverId);
+      console.log("reciever", receiver);
+      console.log("sender", sender);
 
       //UPDATE SENDER - REQUESTS SENT
       const updatedSender = await User.findByIdAndUpdate(sender._id, {
         ...sender,
-        requestsSent: [...sender.requestsSent, receiver._id],
+        requestsSent: sender.requestsSent.push(receiver._id),
       });
 
       //UPDATE RECEIVER - REQUESTS RECEIVED
       await User.findByIdAndUpdate(receiver._id, {
         ...receiver,
-        requestsReceived: [...receiver.requestsReceived, sender._id],
+        requestsReceived: receiver.requestsReceived.push(sender._id),
       });
       res.status(201).json({ user: updatedSender });
     } catch (error) {
