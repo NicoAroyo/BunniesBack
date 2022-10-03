@@ -1,5 +1,4 @@
 import express from "express";
-import { useParams } from "react-router-dom";
 import Model from "../models/relationship.js";
 import User from "../models/user.js";
 
@@ -137,34 +136,14 @@ relationshipsRouter.post("/", async (req, res) => {
   }
 });
 
-//Get all Method
-relationshipsRouter.get("/", async (req, res) => {
-  try {
-    const data = await Model.find();
-    res.json(data);
-  } catch (error) {
-    res.send(500).json({ message: error.message });
-  }
-});
-
-//Get by ID Method
-relationshipsRouter.get("/:id", async (req, res) => {
-  try {
-    const data = await Model.findById(req.params.id);
-    res.json(data);
-  } catch (error) {
-    res.send(500).json({ message: error.message });
-  }
-});
-
-relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
+relationshipsRouter.get("/get-friends/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);
     const promises = user.friends.map((friendId) => {
       return User.findById(friendId);
     });
-    const friends = await Promise.all([promises]);
+    const friends = await Promise.all(promises);
     res.status(200).json(friends);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -200,6 +179,26 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
   // } catch (error) {
   //   res.send(500).json({ message: error.message });
   // }
+});
+
+//Get all Method
+relationshipsRouter.get("/", async (req, res) => {
+  try {
+    const data = await Model.find();
+    res.json(data);
+  } catch (error) {
+    res.send(500).json({ message: error.message });
+  }
+});
+
+//Get by ID Method
+relationshipsRouter.get("/:id", async (req, res) => {
+  try {
+    const data = await Model.findById(req.params.id);
+    res.json(data);
+  } catch (error) {
+    res.send(500).json({ message: error.message });
+  }
 });
 
 // relationshipsRouter.post("/add-friend/:userId", async (req, res) => {
