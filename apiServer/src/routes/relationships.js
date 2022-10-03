@@ -24,9 +24,9 @@ relationshipsRouter.post("/", async (req, res) => {
 relationshipsRouter.get("/", async (req, res) => {
   try {
     const data = await Model.find();
-    res.status(200).json(data);
+    res.json(data);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.send(500).json({ message: error.message });
   }
 });
 
@@ -34,9 +34,9 @@ relationshipsRouter.get("/", async (req, res) => {
 relationshipsRouter.get("/:id", async (req, res) => {
   try {
     const data = await Model.findById(req.params.id);
-    res.status(200).json(data);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.send(500).json({ message: error.message });
   }
 });
 
@@ -52,18 +52,25 @@ relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
     });
     const friends = data.map(async (r) => {
       const user = await User.findById(r.userId2);
-      const friend = { id: r._id, friend: user };
-      return friend;
+      console.log(user);
+      if (user != null) {
+        const friend = { id: r._id, friend: user };
+        return friend;
+      } else return;
     });
+    console.log(friends);
     const friends2 = data2.map(async (r) => {
       const user = await User.findById(r.userId1);
-      const friend = { id: r._id, friend: user };
-      return friend;
+      console.log(user);
+      if (user != null) {
+        const friend = { id: r._id, friend: user };
+        return friend;
+      } else return;
     });
     const all = await Promise.all([...friends, ...friends2]);
-    res.status(200).json(all);
+    res.json(all);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.send(500).json({ message: error.message });
   }
 });
 
@@ -115,17 +122,14 @@ relationshipsRouter.get("/getBlockedByYou/:userId", async (req, res) => {
 relationshipsRouter.get("/getRelevantUsers/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    let allUsers = await User.find();
+    const allUsers = await User.find();
     const allRelationships = await Model.find({
       $or: [{ userId1: userId }, { userId2: userId }],
     });
-    console.log(allRelationships);
     const all = allUsers.map((element) => {
       const monker = allRelationships.find((u) => {
-        return (
-          u.userId1 === element._id.toString() ||
-          u.userId2 === element._id.toString()
-        );
+        const id = element._id.toString();
+        return u.userId1 === id || u.userId2 === id;
       });
       if (!monker) return element;
     });
@@ -143,7 +147,7 @@ relationshipsRouter.get("/getRequested/:userId", async (req, res) => {
     });
     const requested = data.map(async (r) => {
       const user = await User.findById(r.userId2);
-      const request = { id: r._id, blocked: user };
+      const request = { req: r, requested: user };
       return request;
     });
     const all = await Promise.all([...requested]);
