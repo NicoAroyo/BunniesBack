@@ -69,23 +69,28 @@ relationshipsRouter.patch(
   async (req, res) => {
     try {
       const { senderId } = req.params;
-      const { receiver } = req.body;
+      const receiverId = req.body._id;
+      const receiver = await User.findById(receiverId);
       const sender = await User.findById(senderId);
+      console.log(receiver);
+      console.log(sender);
 
       //UPDATE SENDER - REQUESTS SENT, FRIENDS
+      const newRequestsSent = sender.requestsSent.filter(
+        (req) => req === receiver._id
+      );
       await User.findByIdAndUpdate(sender._id, {
-        ...sender,
-        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
-        friends: [...sender.friends, receiver._id],
+        requestsSent: newRequestsSent,
+        friends: sender.friends.push(receiver._id),
       });
 
       //UPDATE RECEIVER - REQUESTS RECEIVED, FRIENDS
+      const newRequestsReceived = receiver.requestsReceived.filter(
+        (req) => req === sender._id
+      );
       const updatedReceiver = await User.findByIdAndUpdate(receiver._id, {
-        ...receiver,
-        friends: [...receiver.friends, sender._id],
-        requestsReceived: receiver.requestsReceived.filter(
-          (req) => req !== sender._id
-        ),
+        friends: receiver.friends.push(sender._id),
+        requestsReceived: newRequestsReceived,
       });
       res.status(201).json({ user: updatedReceiver });
     } catch (error) {
