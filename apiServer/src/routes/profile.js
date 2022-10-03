@@ -18,7 +18,6 @@ profileRouter.get("/:userId", async (req, res) => {
       async (r) => await User.findById(r.userId2)
     );
     const ret = { user, posts, relationships, friends };
-    console.log(ret);
     res.status(200).json(ret);
   } catch (error) {
     res.status(500).json({ message: error.message });

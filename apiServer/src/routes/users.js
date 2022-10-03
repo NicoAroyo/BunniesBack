@@ -7,7 +7,7 @@ export const usersRouter = express.Router();
 usersRouter.get("/", async (req, res) => {
   try {
     const data = await User.find();
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -17,9 +17,9 @@ usersRouter.get("/", async (req, res) => {
 usersRouter.get("/:id", async (req, res) => {
   try {
     const data = await User.findById(req.params.id);
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -61,8 +61,8 @@ usersRouter.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await User.findByIdAndDelete(id);
-    res.send(`${data} deleted`);
+    res.status(204).send(`${data} deleted`);
   } catch (error) {
-    res.send(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });

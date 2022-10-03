@@ -2,6 +2,8 @@ import env from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import { authRouter } from "./routes/auth.js";
 
 env.config();
 
@@ -20,19 +22,10 @@ const PORT = 3002;
 //MIDDLEWARE
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 app.listen(PORT, () => {
   console.log(`AUTH Server Started at http://localhost:${PORT}/`);
 });
 
-app.post("/register", (req, res) => {
-  res.json("register");
-});
-
-app.post("/login", (req, res) => {
-  res.json("login");
-});
-
-app.post("/profile", (req, res) => {
-  res.json("profile");
-});
+app.use("/auth", authRouter);
