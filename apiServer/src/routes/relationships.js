@@ -1,8 +1,125 @@
 import express from "express";
+import { useParams } from "react-router-dom";
 import Model from "../models/relationship.js";
 import User from "../models/user.js";
 
 export const relationshipsRouter = express.Router();
+
+//SEND FRIEND REQ
+relationshipsRouter.patch(
+  "/send-friend-request/:receiverId",
+  async (req, res) => {
+    try {
+      const { receiverId } = req.params;
+      const { sender } = req.body;
+      const receiver = await User.findById(receiverId);
+
+      //UPDATE SENDER - REQUESTS SENT
+      const updatedSender = await User.findByIdAndUpdate(sender._id, {
+        ...sender,
+        requestsSent: [...sender.requestsSent, receiver._id],
+      });
+
+      //UPDATE RECEIVER - REQUESTS RECEIVED
+      await User.findByIdAndUpdate(receiver._id, {
+        ...receiver,
+        requestsReceived: [...receiver.requestsReceived, sender._id],
+      });
+      res.status(201).json({ user: updatedSender });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
+//WITHDRAW FRIEND REQ
+relationshipsRouter.patch(
+  "/withdraw-friend-request/:receiverId",
+  async (req, res) => {
+    try {
+      const { receiverId } = req.params;
+      const { sender } = req.body;
+      const receiver = await User.findById(receiverId);
+
+      //UPDATE SENDER - REQUESTS SENT
+      const updatedSender = await User.findByIdAndUpdate(sender._id, {
+        ...sender,
+        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
+      });
+
+      //UPDATE RECEIVER - REQUESTS RECEIVED
+      await User.findByIdAndUpdate(receiver._id, {
+        ...receiver,
+        requestsReceived: receiver.requestsReceived.filter(
+          (req) => req !== sender._id
+        ),
+      });
+      res.status(201).json({ user: updatedSender });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
+//ACCEPT FRIEND REQ
+relationshipsRouter.patch(
+  "/accept-friend-request/:senderId",
+  async (req, res) => {
+    try {
+      const { senderId } = req.params;
+      const { receiver } = req.body;
+      const sender = await User.findById(senderId);
+
+      //UPDATE SENDER - REQUESTS SENT, FRIENDS
+      await User.findByIdAndUpdate(sender._id, {
+        ...sender,
+        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
+        friends: [...sender.friends, receiver._id],
+      });
+
+      //UPDATE RECEIVER - REQUESTS RECEIVED, FRIENDS
+      const updatedReceiver = await User.findByIdAndUpdate(receiver._id, {
+        ...receiver,
+        friends: [...receiver.friends, sender._id],
+        requestsReceived: receiver.requestsReceived.filter(
+          (req) => req !== sender._id
+        ),
+      });
+      res.status(201).json({ user: updatedReceiver });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
+//REJECT FRIEND REQ
+relationshipsRouter.patch(
+  "/reject-friend-request/:senderId",
+  async (req, res) => {
+    try {
+      const { senderId } = req.params;
+      const { receiver } = req.body;
+      const sender = await User.findById(senderId);
+
+      //UPDATE SENDER - REQUESTS SENT
+      await User.findByIdAndUpdate(sender._id, {
+        ...sender,
+        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
+      });
+
+      //UPDATE RECEIVER - REQUESTS RECEIVED, FRIENDS
+      const updatedReceiver = await User.findByIdAndUpdate(receiver._id, {
+        ...receiver,
+        requestsReceived: receiver.requestsReceived.filter(
+          (req) => req !== sender._id
+        ),
+      });
+      res.status(201).json({ user: updatedReceiver });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
 
 //Post Method
 relationshipsRouter.post("/", async (req, res) => {
@@ -42,37 +159,55 @@ relationshipsRouter.get("/:id", async (req, res) => {
 
 relationshipsRouter.get("/getFriends/:userId", async (req, res) => {
   try {
-    const data = await Model.find({
-      userId1: req.params.userId,
-      type: "friends",
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    const promises = user.friends.map((friendId) => {
+      return User.findById(friendId);
     });
-    const data2 = await Model.find({
-      userId2: req.params.userId,
-      type: "friends",
-    });
-    const friends = data.map(async (r) => {
-      const user = await User.findById(r.userId2);
-      console.log(user);
-      if (user != null) {
-        const friend = { id: r._id, friend: user };
-        return friend;
-      } else return;
-    });
-    console.log(friends);
-    const friends2 = data2.map(async (r) => {
-      const user = await User.findById(r.userId1);
-      console.log(user);
-      if (user != null) {
-        const friend = { id: r._id, friend: user };
-        return friend;
-      } else return;
-    });
-    const all = await Promise.all([...friends, ...friends2]);
-    res.json(all);
+    const friends = await Promise.all([promises]);
+    res.status(200).json(friends);
   } catch (error) {
-    res.send(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
+  // try {
+  //   const data = await Model.find({
+  //     userId1: req.params.userId,
+  //     type: "friends",
+  //   });
+  //   const data2 = await Model.find({
+  //     userId2: req.params.userId,
+  //     type: "friends",
+  //   });
+  //   const friends = data.map(async (r) => {
+  //     const user = await User.findById(r.userId2);
+  //     console.log(user);
+  //     if (user !== null) {
+  //       const friend = { id: r._id, friend: user };
+  //       return friend;
+  //     } else return;
+  //   });
+  //   console.log(friends);
+  //   const friends2 = data2.map(async (r) => {
+  //     const user = await User.findById(r.userId1);
+  //     console.log(user);
+  //     if (user !== null) {
+  //       const friend = { id: r._id, friend: user };
+  //       return friend;
+  //     } else return;
+  //   });
+  //   const all = await Promise.all([...friends, ...friends2]);
+  //   res.json(all.filter((x) => x));
+  // } catch (error) {
+  //   res.send(500).json({ message: error.message });
+  // }
 });
+
+// relationshipsRouter.post("/add-friend/:userId", async (req, res) => {
+//   const { userId } = req.params;
+//   const { user } = req.body;
+//   user.frineds.push(userId);
+//   const updatedUser = await User.findByIdAndUpdate(user._id, user);
+// });
 
 relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
   try {

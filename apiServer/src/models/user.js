@@ -54,6 +54,24 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  friends: {
+    type: Array,
+  },
+  blocked: {
+    type: Array,
+  },
+  requestsSent: {
+    type: Array,
+  },
+  requestsReceived: {
+    type: Array,
+  },
+  blocked: {
+    type: Array,
+  },
+  blockedBy: {
+    type: Array,
+  },
 });
 
 export default mongoose.model("User", userSchema);
