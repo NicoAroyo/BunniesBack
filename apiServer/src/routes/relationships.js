@@ -13,9 +13,6 @@ relationshipsRouter.patch(
       const senderId = req.body._id;
       const sender = await User.findById(senderId);
       const receiver = await User.findById(receiverId);
-      console.log("reciever", receiver);
-      console.log("sender", sender);
-
       //UPDATE SENDER - REQUESTS SENT
       sender.requestsSent.push(receiver._id);
       await User.findByIdAndUpdate(sender._id, sender);
@@ -37,21 +34,24 @@ relationshipsRouter.patch(
   async (req, res) => {
     try {
       const { receiverId } = req.params;
-      const { sender } = req.body;
+      const senderId = req.body._id;
+      const sender = await User.findById(senderId);
       const receiver = await User.findById(receiverId);
 
       //UPDATE SENDER - REQUESTS SENT
+      const newSender = sender.requestsSent.filter(
+        (req) => req === receiver._id
+      );
       const updatedSender = await User.findByIdAndUpdate(sender._id, {
-        ...sender,
-        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
+        requestsSent: newSender,
       });
 
       //UPDATE RECEIVER - REQUESTS RECEIVED
+      const newReciever = receiver.requestsReceived.filter(
+        (req) => req === sender._id
+      );
       await User.findByIdAndUpdate(receiver._id, {
-        ...receiver,
-        requestsReceived: receiver.requestsReceived.filter(
-          (req) => req !== sender._id
-        ),
+        requestsReceived: newReciever,
       });
       res.status(201).json({ user: updatedSender });
     } catch (error) {
@@ -66,23 +66,28 @@ relationshipsRouter.patch(
   async (req, res) => {
     try {
       const { senderId } = req.params;
-      const { receiver } = req.body;
+      const receiverId = req.body._id;
+      const receiver = await User.findById(receiverId);
       const sender = await User.findById(senderId);
+      console.log(receiver);
+      console.log(sender);
 
       //UPDATE SENDER - REQUESTS SENT, FRIENDS
+      const newRequestsSent = sender.requestsSent.filter(
+        (req) => req === receiver._id
+      );
       await User.findByIdAndUpdate(sender._id, {
-        ...sender,
-        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
-        friends: [...sender.friends, receiver._id],
+        requestsSent: newRequestsSent,
+        friends: sender.friends.push(receiver._id),
       });
 
       //UPDATE RECEIVER - REQUESTS RECEIVED, FRIENDS
+      const newRequestsReceived = receiver.requestsReceived.filter(
+        (req) => req === sender._id
+      );
       const updatedReceiver = await User.findByIdAndUpdate(receiver._id, {
-        ...receiver,
-        friends: [...receiver.friends, sender._id],
-        requestsReceived: receiver.requestsReceived.filter(
-          (req) => req !== sender._id
-        ),
+        friends: receiver.friends.push(sender._id),
+        requestsReceived: newRequestsReceived,
       });
       res.status(201).json({ user: updatedReceiver });
     } catch (error) {
@@ -97,21 +102,24 @@ relationshipsRouter.patch(
   async (req, res) => {
     try {
       const { senderId } = req.params;
-      const { receiver } = req.body;
+      const receiverId = req.body._id;
       const sender = await User.findById(senderId);
+      const receiver = await User.findById(receiverId);
 
       //UPDATE SENDER - REQUESTS SENT
+      const newRequestsSent = sender.requestsSent.filter(
+        (req) => req === receiver._id
+      );
       await User.findByIdAndUpdate(sender._id, {
-        ...sender,
-        requestsSent: sender.requestsSent.filter((req) => req !== receiver._id),
+        requestsSent: newRequestsSent,
       });
 
       //UPDATE RECEIVER - REQUESTS RECEIVED, FRIENDS
+      const newRequestsReceived = receiver.requestsReceived.filter(
+        (req) => req === sender._id
+      );
       const updatedReceiver = await User.findByIdAndUpdate(receiver._id, {
-        ...receiver,
-        requestsReceived: receiver.requestsReceived.filter(
-          (req) => req !== sender._id
-        ),
+        requestsReceived: newRequestsReceived,
       });
       res.status(201).json({ user: updatedReceiver });
     } catch (error) {
