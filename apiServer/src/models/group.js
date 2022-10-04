@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import messag from "./messag";
 
 const groupSchema = new mongoose.Schema({
   name : { 
@@ -27,6 +28,11 @@ const groupSchema = new mongoose.Schema({
     default : Date.now
   },
   memebers: 
+  {
+    required: false,
+    type: Array
+  },
+  messags: 
   {
     required: false,
     type: Array
