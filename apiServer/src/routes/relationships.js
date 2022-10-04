@@ -17,17 +17,14 @@ relationshipsRouter.patch(
       console.log("sender", sender);
 
       //UPDATE SENDER - REQUESTS SENT
-      const updatedSender = await User.findByIdAndUpdate(sender._id, {
-        ...sender,
-        requestsSent: sender.requestsSent.push(receiver._id),
-      });
+      sender.requestsSent.push(receiver._id);
+      await User.findByIdAndUpdate(sender._id, sender);
 
       //UPDATE RECEIVER - REQUESTS RECEIVED
-      await User.findByIdAndUpdate(receiver._id, {
-        ...receiver,
-        requestsReceived: receiver.requestsReceived.push(sender._id),
-      });
-      res.status(201).json({ user: updatedSender });
+      receiver.requestsReceived.push(sender._id);
+      await User.findByIdAndUpdate(receiver._id, receiver);
+
+      res.status(201).json({ user: sender });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
