@@ -136,6 +136,27 @@ relationshipsRouter.patch(
   }
 );
 
+// REMOVE FRIEND
+relationshipsRouter.patch("/remove-friend", async (req, res) => {
+  try {
+    const { id1, id2 } = req.body;
+    const user1 = await User.findById(id1);
+    const user2 = await User.findById(id2);
+
+    //UPDATE USER1 - FRIENDS
+    const friends1 = user1.friends.filter((f) => f !== id2);
+    await User.findByIdAndUpdate(id1, { friends: friends1 });
+
+    //UPDATE USER2 - FRIENDS
+    const friends2 = user2.friends.filter((f) => f !== id1);
+    await User.findByIdAndUpdate(id2, { friends: friends2 });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 //GET FRIENDS
 relationshipsRouter.get(
   "/get-users/:userId/:relationship",

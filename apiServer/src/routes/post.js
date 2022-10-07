@@ -14,6 +14,8 @@ postsRouter.post("/", verifyAccessToken, async (req, res) => {
     privacy: req.body.privacy,
     location: req.body.location,
     tagged: req.body.tagged,
+    tags: req.body.tags,
+    publishedBy: req.body.publishedBy,
   });
 
   try {
