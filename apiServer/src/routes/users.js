@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import { verifyAccessToken } from "../../../authServer/JWT/jwtHelper.js";
 import User from "../models/user.js";
 
 export const usersRouter = express.Router();
@@ -24,7 +25,7 @@ usersRouter.get("/:id", async (req, res) => {
 });
 
 //PATCH http://localhost:5000/api/questions/{id}
-usersRouter.patch("/:id", async (req, res) => {
+usersRouter.patch("/:id", verifyAccessToken, async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
