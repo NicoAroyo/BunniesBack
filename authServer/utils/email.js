@@ -7,7 +7,7 @@ export const sendEmail = async (email, subject, text) => {
       service: "hotmail",
       auth: {
         user: "tsvisela125@outlook.co.il",
-        pass: "mir458imsr67p588",
+        pass: "",
       },
     });
     await transporter.sendMail({
