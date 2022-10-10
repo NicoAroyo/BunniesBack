@@ -1,4 +1,5 @@
 import express from "express";
+import { verifyAccessToken } from "../../../authServer/JWT/jwtHelper.js";
 import Model from "../models/relationship.js";
 import User from "../models/user.js";
 
@@ -9,6 +10,7 @@ const options = { new: true };
 //SEND FRIEND REQ
 relationshipsRouter.patch(
   "/send-friend-request/:receiverId",
+  verifyAccessToken,
   async (req, res) => {
     try {
       const { receiverId } = req.params;
@@ -39,6 +41,7 @@ relationshipsRouter.patch(
 //WITHDRAW FRIEND REQ
 relationshipsRouter.patch(
   "/withdraw-friend-request/:receiverId",
+  verifyAccessToken,
   async (req, res) => {
     try {
       const { receiverId } = req.params;
@@ -71,6 +74,7 @@ relationshipsRouter.patch(
 //ACCEPT FRIEND REQ
 relationshipsRouter.patch(
   "/accept-friend-request/:senderId",
+  verifyAccessToken,
   async (req, res) => {
     try {
       const { senderId } = req.params;
@@ -108,6 +112,7 @@ relationshipsRouter.patch(
 //REJECT FRIEND REQ
 relationshipsRouter.patch(
   "/reject-friend-request/:senderId",
+  verifyAccessToken,
   async (req, res) => {
     try {
       const { senderId } = req.params;
@@ -130,6 +135,31 @@ relationshipsRouter.patch(
         options
       );
       res.status(201).json({ user: updatedReceiver });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
+// REMOVE FRIEND
+relationshipsRouter.patch(
+  "/remove-friend",
+  verifyAccessToken,
+  async (req, res) => {
+    try {
+      const { id1, id2 } = req.body;
+      const user1 = await User.findById(id1);
+      const user2 = await User.findById(id2);
+
+      //UPDATE USER1 - FRIENDS
+      const friends1 = user1.friends.filter((f) => f !== id2);
+      await User.findByIdAndUpdate(id1, { friends: friends1 });
+
+      //UPDATE USER2 - FRIENDS
+      const friends2 = user2.friends.filter((f) => f !== id1);
+      await User.findByIdAndUpdate(id2, { friends: friends2 });
+
+      res.status(201);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -195,6 +225,7 @@ relationshipsRouter.patch("/withdraw-block/:receiverId", async (req, res) => {
 //GET FRIENDS
 relationshipsRouter.get(
   "/get-users/:userId/:relationship",
+  verifyAccessToken,
   async (req, res) => {
     try {
       const { userId, relationship } = req.params;
@@ -343,25 +374,14 @@ relationshipsRouter.get("/:id", async (req, res) => {
 //   }
 // });
 
-relationshipsRouter.patch("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const options = { new: true };
-    const result = await Model.findByIdAndUpdate(id, updatedData, options);
-    res.send(result);
-  } catch (error) {
-    res.send(400).json({ message: error.message });
-  }
-});
-
-//Delete by ID Method
-relationshipsRouter.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = await Model.findByIdAndDelete(id);
-    res.send(`${data} deleted`);
-  } catch (error) {
-    res.send(400).json({ message: error.message });
-  }
-});
+// relationshipsRouter.patch("/:id", async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const updatedData = req.body;
+//     const options = { new: true };
+//     const result = await Model.findByIdAndUpdate(id, updatedData, options);
+//     res.send(result);
+//   } catch (error) {
+//     res.send(400).json({ message: error.message });
+//   }
+// });

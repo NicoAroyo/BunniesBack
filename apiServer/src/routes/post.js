@@ -14,6 +14,8 @@ postsRouter.post("/", verifyAccessToken, async (req, res) => {
     privacy: req.body.privacy,
     location: req.body.location,
     tagged: req.body.tagged,
+    tags: req.body.tags,
+    publishedBy: req.body.publishedBy,
   });
 
   try {
@@ -44,7 +46,7 @@ postsRouter.get("/:id", async (req, res) => {
   }
 });
 
-postsRouter.get("/getPostsByUser/:userId", async (req, res) => {
+postsRouter.get("/get-posts-by-user/:userId", async (req, res) => {
   try {
     const data = await Post.find({ userId: req.params.userId });
     res.status(200).json(data);
@@ -54,7 +56,7 @@ postsRouter.get("/getPostsByUser/:userId", async (req, res) => {
 });
 
 //Update by ID Method
-postsRouter.patch("/:id", async (req, res) => {
+postsRouter.patch("/:id", verifyAccessToken, async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
@@ -68,7 +70,7 @@ postsRouter.patch("/:id", async (req, res) => {
 });
 
 //Delete by ID Method
-postsRouter.delete("/:id", async (req, res) => {
+postsRouter.delete("/:id", verifyAccessToken, async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Post.findByIdAndDelete(id);

@@ -48,6 +48,12 @@ const postSchema = new mongoose.Schema({
   tagged: {
     type: Array,
   },
+  tags: {
+    type: Array,
+  },
+  publishedBy: {
+    type: String,
+  },
 });
 
 export default mongoose.model("Post", postSchema);

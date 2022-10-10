@@ -10,21 +10,11 @@ profileRouter.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(userId);
     const posts = await Post.find({ userId });
-    const relationships = await Relationship.find({
-      type: "friends",
-      $or: [{ userId1: userId }, { userId2: userId }],
-    });
-    // const allRelationships = await Model.find({
-    //   $or: [{ userId1: userId }, { userId2: userId }],
-    // });
-    const friends = relationships.map(
-      async (r) => await User.findById(r.userId2)
+    const friends = await Promise.all(
+      user.friends.map((friend) => User.findById(friend))
     );
-    const friends2 = relationships.map(
-      async (r) => await User.findById(r.userId1)
-    );
-    const totalFriends = await Promise.all([...friends, ...friends2]);
-    const ret = { user, posts, relationships, totalFriends };
+
+    const ret = { user, posts, friends };
     res.status(200).json(ret);
   } catch (error) {
     res.status(500).json({ message: error.message });
