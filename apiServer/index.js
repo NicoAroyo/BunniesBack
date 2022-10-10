@@ -10,6 +10,7 @@ import { relationshipsRouter } from "./src/routes/relationships.js";
 import { profileRouter } from "./src/routes/profile.js";
 import { groupsRouter } from "./src/routes/groups.js";
 
+
 env.config();
 
 //CONNECT TO DB
@@ -41,3 +42,4 @@ app.use("/api/relationships", relationshipsRouter);
 app.use("/api/profile", profileRouter);
 
 app.use("/api/groups", groupsRouter);
+
