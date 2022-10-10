@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
-  timePosting : {
+  timePosting: {
     required: Date,
     type: Date.now,
   },

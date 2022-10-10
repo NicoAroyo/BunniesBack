@@ -8,6 +8,7 @@ import { postsRouter } from "./src/routes/post.js";
 import { usersRouter } from "./src/routes/users.js";
 import { relationshipsRouter } from "./src/routes/relationships.js";
 import { profileRouter } from "./src/routes/profile.js";
+import { groupsRouter } from "./src/routes/groups.js";
 
 env.config();
 
@@ -38,3 +39,5 @@ app.use("/api/users", usersRouter);
 app.use("/api/relationships", relationshipsRouter);
 
 app.use("/api/profile", profileRouter);
+
+app.use("/api/groups", groupsRouter);

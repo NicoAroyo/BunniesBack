@@ -5,13 +5,14 @@ export const groupsRouter = express.Router();
 
 //Post Method
 groupsRouter.post("/", async (req, res) => {
-  console.log(req.body);
   const data = new Model({
-    content: req.body.content,
-    userId: req.body.userId,
-    imageUrl: req.body.imageUrl,
+    name: req.body.name,
+    creator: req.body.creator,
     privacy: req.body.privacy,
+    memebers: req.body.memebers,
+    admins: req.body.admins,
   });
+  console.log(data);
   try {
     const dataToSave = await data.save();
     res.status(200).json(dataToSave);
@@ -23,7 +24,9 @@ groupsRouter.post("/", async (req, res) => {
 //Get all Method
 groupsRouter.get("/", async (req, res) => {
   try {
+    console.log("HI FROM GET");
     const data = await Model.find();
+    console.log(data);
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,9 +34,19 @@ groupsRouter.get("/", async (req, res) => {
 });
 
 //Get by ID Method
-groupsRouter.get("/:id", async (req, res) => {
+groupsRouter.get("/getById/:id", async (req, res) => {
   try {
     const data = await Model.findById(req.params.id);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+groupsRouter.get("/getPublic", async (req, res) => {
+  try {
+    console.log("HI FROM GET");
+    const data = await Model.find({ privacy: "public" });
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,6 +72,92 @@ groupsRouter.delete("/:id", async (req, res) => {
     const id = req.params.id;
     const data = await Model.findByIdAndDelete(id);
     res.status(204).send(`${data} deleted`);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+groupsRouter.patch("/requestToJoin/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+
+    group.requests.push(sender._id);
+    await Model.findByIdAndUpdate(groupId, {
+      requests: group.requests,
+    });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+groupsRouter.patch("/acceptJoinRequest/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+    const groupReq = group.requests.filter(
+      (x) => x._id.toString() !== sender._id.toString()
+    );
+    await Model.findByIdAndUpdate(groupId, {
+      requests: groupReq,
+      members: group.memebers.push(sender._id),
+    });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+groupsRouter.patch("/cancelRequest/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+    console.log("hi", group);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+    const groupReq = group.requests.filter(
+      (x) => x.toString() !== sender._id.toString()
+    );
+    await Model.findByIdAndUpdate(groupId, {
+      requests: [...groupReq],
+    });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+groupsRouter.patch("/leaveGroup/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+    console.log("hi", group);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+    const groupMeb = group.members.filter(
+      (x) => x.toString() !== sender._id.toString()
+    );
+    const groupAdm = group.admins.filter(
+      (x) => x.toString() !== sender._id.toString()
+    );
+    await Model.findByIdAndUpdate(groupId, {
+      requests: [...groupMeb],
+      admins: [...groupAdm],
+    });
+
+    res.status(201);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
