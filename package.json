@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently --kill-others \"nodemon apiServer/index.js\" \"nodemon authServer/index.js\""
+    "start": "concurrently --kill-others \"nodemon apiServer/index.js\" \"nodemon authServer/index.js\" \"nodemon apiServer/src/webSocketsServer/index.js\""
   },
   "repository": {
     "type": "git",
