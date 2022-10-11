@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyAccessToken } from "../../../authServer/JWT/jwtHelper.js";
-import Post from "../models/messag";
+import Post from "../models/message.js";
 
 export const messagRouter = express.Router();
 

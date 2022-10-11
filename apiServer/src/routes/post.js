@@ -1,6 +1,7 @@
 import express from "express";
 import { verifyAccessToken } from "../../../authServer/JWT/jwtHelper.js";
 import Post from "../models/post.js";
+import user from "../models/user.js";
 
 export const postsRouter = express.Router();
 
@@ -30,6 +31,20 @@ postsRouter.post("/", verifyAccessToken, async (req, res) => {
 postsRouter.get("/", async (req, res) => {
   try {
     const data = await Post.find();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+postsRouter.get("/withoutBlocked", async (req, res) => {
+  try {
+    const currUser = req.body._id;
+    const data = await Post.find();
+    const posters = data.forEach((element) => {
+      return user.findById(element.userId);
+    });
+
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });

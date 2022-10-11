@@ -291,6 +291,34 @@ relationshipsRouter.get("/:id", async (req, res) => {
   }
 });
 
+relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    const blocked = user.blocked?.map(async (block) => {
+      return await User.findById(block);
+    });
+    const data = await Promise.all([...blocked]);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+relationshipsRouter.get("/getBlockedBy/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    const blocked = user.blockedBy?.map(async (block) => {
+      return await User.findById(block);
+    });
+    const data = await Promise.all([...blocked]);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // relationshipsRouter.get("/getBlocked/:userId", async (req, res) => {
 //   try {
 //     const data = await Model.find({
