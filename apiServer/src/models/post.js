@@ -54,6 +54,11 @@ const postSchema = new mongoose.Schema({
   publishedBy: {
     type: String,
   },
+  groupId: {
+    required: false,
+    type: String,
+    default: "",
+  },
 });
 
 export default mongoose.model("Post", postSchema);

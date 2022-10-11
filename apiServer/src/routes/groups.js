@@ -1,6 +1,8 @@
 import express from "express";
+import group from "../models/group.js";
 import Model from "../models/group.js";
-
+import User from "../models/user.js";
+import Post from "../models/post.js";
 export const groupsRouter = express.Router();
 
 //Post Method
@@ -48,6 +50,40 @@ groupsRouter.get("/getPublic", async (req, res) => {
     console.log("HI FROM GET");
     const data = await Model.find({ privacy: "public" });
     res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+groupsRouter.get("/getAllInformation/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const group = await Model.findById(groupId);
+    console.log(
+      "🚀 ~ file: groups.js ~ line 62 ~ groupsRouter.get ~ group",
+      group.memebers
+    );
+    console.log(group.memebers);
+    const members = group.memebers?.map(async (request) => {
+      return await User.findById(request);
+    });
+    const requests = group.requests?.map(async (request) => {
+      return await User.findById(request);
+    });
+    const posts = group.posts?.map(async (post) => {
+      return await Post.findById(post);
+    });
+    const admins = group.admins?.map(async (admins) => {
+      return await User.findById(admins);
+    });
+    console.log(members);
+    const dataMembers = await Promise.all([...members]);
+    const dataAdmins = await Promise.all([...admins]);
+    const dataPosts = await Promise.all([...posts]);
+    const dataRequests = await Promise.all([...requests]);
+
+    const ret = { dataMembers, dataAdmins, dataPosts, dataRequests, group };
+    res.status(200).json(ret);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
