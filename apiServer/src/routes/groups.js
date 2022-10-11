@@ -198,3 +198,40 @@ groupsRouter.patch("/leaveGroup/:groupId", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+groupsRouter.patch("/removeAdmin/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+
+    const admins = group.admins.filter(
+      (x) => sender._id.toString() !== x.toString()
+    );
+    await Model.findByIdAndUpdate(groupId, {
+      admins: admins,
+    });
+    res.status(201);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+groupsRouter.patch("/makeAdmin/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { sender } = req.body;
+    const group = await Model.findById(groupId);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+
+    group.admins.push(sender._id);
+    await Model.findByIdAndUpdate(groupId, {
+      admins: group.admins,
+    });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
