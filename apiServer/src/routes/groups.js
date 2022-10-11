@@ -135,16 +135,18 @@ groupsRouter.patch("/requestToJoin/:groupId", async (req, res) => {
 groupsRouter.patch("/acceptJoinRequest/:groupId", async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { sender } = req.body;
-    const group = await Model.findById(groupId);
 
-    // UPDATE RECEIVER - REQUESTS RECEIVED
-    const groupReq = group.requests.filter(
-      (x) => x._id.toString() !== sender._id.toString()
+    const { request } = req.body;
+    const group = await Model.findById(groupId);
+    console.log(group);
+    const groupReq = group.requests?.filter(
+      (x) => x.toString() !== request._id.toString()
     );
+
+    group.memebers.push(request._id.toString());
     await Model.findByIdAndUpdate(groupId, {
       requests: groupReq,
-      members: group.memebers.push(sender._id),
+      memebers: group.memebers,
     });
 
     res.status(201);
@@ -228,6 +230,25 @@ groupsRouter.patch("/makeAdmin/:groupId", async (req, res) => {
     group.admins.push(sender._id);
     await Model.findByIdAndUpdate(groupId, {
       admins: group.admins,
+    });
+
+    res.status(201);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+groupsRouter.patch("/addPost/:groupId", async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { post } = req.body;
+    const group = await Model.findById(groupId);
+
+    // UPDATE RECEIVER - REQUESTS RECEIVED
+
+    group.posts.push(post._id);
+    await Model.findByIdAndUpdate(groupId, {
+      posts: group.posts,
     });
 
     res.status(201);
